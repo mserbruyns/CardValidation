@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CardValidation.Models;
 using System.Data.SqlClient;
 using System.Data;
+using CardValidation.Logic;
 
 namespace CardValidation.Controllers
 {
@@ -33,6 +34,9 @@ namespace CardValidation.Controllers
         [HttpGet("validatecard")]
         public IEnumerable<Card> ValidateCard(string cardNumber, string expiryDate)
         {
+            var cardType = CardValidationLogic.CheckCardType(cardNumber);
+
+
 
             return _context.Cards;
         }
