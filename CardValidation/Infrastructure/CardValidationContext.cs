@@ -5,8 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using CardValidation.Models;
 
-namespace CardValidation.Models
+namespace CardValidation.Infrastructure
 {
     public class CardValidationContext: DbContext
     {
@@ -26,10 +27,10 @@ namespace CardValidation.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Card>().HasData(
-                new Card() { id = 1, cardNumber = "4000000000000000", expiryDate = new DateTime(2004, 12, 5) },
-                new Card() { id = 2, cardNumber = "5000000000000000", expiryDate = new DateTime(2004, 12, 5) },
-                new Card() { id = 3, cardNumber = "35000000000000000", expiryDate = new DateTime(2004, 12, 5) },
-                new Card() { id = 4, cardNumber = "4000000000000000", expiryDate = new DateTime(2004, 12, 5) }
+                new Card() { id = 1, cardNumber = "4000000000000000", expiryDate = "102004" },
+                new Card() { id = 2, cardNumber = "5000000000000000", expiryDate = "102004" },
+                new Card() { id = 3, cardNumber = "35000000000000000", expiryDate = "102004" },
+                new Card() { id = 4, cardNumber = "4000000000000000", expiryDate = "102004" }
             );
         }
     }

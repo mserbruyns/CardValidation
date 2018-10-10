@@ -14,7 +14,8 @@ namespace CardValidation.Logic
             if (card.StartsWith("4"))
             {
                 type = "VISA";
-            }else if (card.StartsWith("5"))
+            }
+            else if (card.StartsWith("5"))
             {
                 type = "MasterCard";
             }
@@ -22,7 +23,7 @@ namespace CardValidation.Logic
             {
                 type = "Amex";
             }
-            else if (card.StartsWith("37"))
+            else if (card.StartsWith("35"))
             {
                 type = "JCB";
             }
