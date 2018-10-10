@@ -14,7 +14,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[GetcardinformationTest]
+CREATE PROCEDURE [dbo].[ValidateCard]
 @cardNumber NVARCHAR(20) = NULL,
 @cardType NVARCHAR(20) = NULL,
 @input_expiry NVARCHAR(6) = NULL,

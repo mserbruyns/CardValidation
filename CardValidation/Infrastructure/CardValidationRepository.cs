@@ -65,7 +65,7 @@ namespace CardValidation.Infrastructure
 
             };
             parameters.Add(outputParameter);
-            _dbContext.Database.ExecuteSqlCommand("exec GetcardinformationTest @cardNumber, @cardType, @input_expiry, @result OUT", parameters);
+            _dbContext.Database.ExecuteSqlCommand("exec ValidateCard @cardNumber, @cardType, @input_expiry, @result OUT", parameters);
 
             var response = new ValidationResponse()
             {
