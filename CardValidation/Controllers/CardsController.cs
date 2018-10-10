@@ -30,12 +30,14 @@ namespace CardValidation.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Card>))]
         public async Task<IActionResult> GetCards()
         {
-            return Ok("Added new card");
+            return Ok(await _cardValidationRepository.GetCards());
         }
 
         [HttpPost]
+        [ProducesResponseType(200, Type = typeof(string))]
         public async Task<IActionResult> AddCard(string cardNumber, string expiryDate)
         {
             await this._cardValidationRepository.AddCard(new Card() { cardNumber = cardNumber, expiryDate = expiryDate });

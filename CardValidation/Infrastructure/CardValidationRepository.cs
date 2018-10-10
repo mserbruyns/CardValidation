@@ -25,6 +25,11 @@ namespace CardValidation.Infrastructure
             return _dbContext.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<Card>> GetCards()
+        {
+            return await _dbContext.Cards.ToListAsync();
+        }
+
         public ValidationResponse ValidateCard(string cardNumber, string cardType, string expiryDate)
         {
             List<SqlParameter> parameters = new List<SqlParameter>()

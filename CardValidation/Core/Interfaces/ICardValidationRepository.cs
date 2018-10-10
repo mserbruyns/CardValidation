@@ -10,5 +10,6 @@ namespace CardValidation.Core.Interfaces
     {
         ValidationResponse ValidateCard(string cardNumber, string cardType, string expiryDate);
         Task AddCard(Card card);
+        Task<IEnumerable<Card>> GetCards();
     }
 }
