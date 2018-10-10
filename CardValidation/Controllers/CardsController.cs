@@ -9,6 +9,11 @@ using CardValidation.Models;
 using System.Data.SqlClient;
 using System.Data;
 using CardValidation.Logic;
+using CardValidation.Infrastructure;
+using CardValidation.Core.Interfaces;
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
+using CardValidation.Utils;
 
 namespace CardValidation.Controllers
 {
@@ -16,30 +21,45 @@ namespace CardValidation.Controllers
     [ApiController]
     public class CardsController : ControllerBase
     {
-        private readonly CardValidationContext _context;
 
-        public CardsController(CardValidationContext context)
+        private readonly ICardValidationRepository _cardValidationRepository;
+
+        public CardsController(ICardValidationRepository cardValidationRepository)
         {
-            _context = context;
+            _cardValidationRepository = cardValidationRepository;
         }
 
-        // GET: api/Cards
         [HttpGet]
-        public IEnumerable<Card> GetAllCards()
+        public async Task<IActionResult> GetCards()
         {
-            return _context.Cards;
+            return Ok("Added new card");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddCard(string cardNumber, string expiryDate)
+        {
+            await this._cardValidationRepository.AddCard(new Card() { cardNumber = cardNumber, expiryDate = expiryDate });
+            return Ok("Added new card");
+        }
+
+        private static readonly Regex rxNonDigits = new Regex(@"[^\d]+");
 
         [HttpGet("validatecard")]
-        public IEnumerable<Card> ValidateCard(string cardNumber, string expiryDate)
+        [ProducesResponseType(200, Type = typeof(ValidationResponse))]
+        public async Task<IActionResult> ValidateCard(string cardNumber, string expiryDate)
         {
-            var cardType = CardValidationLogic.CheckCardType(cardNumber);
+            if (string.IsNullOrWhiteSpace(cardNumber))
+                return BadRequest("cardNumber can't be empty");
 
-
-
-            return _context.Cards;
+            int n;
+            bool isNumeric = int.TryParse("123", out n);
+            if (!isNumeric)
+                return BadRequest("expiryDate must be a number");
+            
+            string cleanedCardNumber = RegexUtils.OnlyDigits(cardNumber);
+            var cardType = CardValidationLogic.CheckCardType(cleanedCardNumber);
+            var response = this._cardValidationRepository.ValidateCard(cleanedCardNumber, cardType, expiryDate);
+            return Ok(response);
         }
-
     }
 }
