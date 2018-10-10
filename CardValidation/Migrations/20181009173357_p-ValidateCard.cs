@@ -6,46 +6,30 @@ namespace CardValidation.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var fn = @"USE CardValidation
+            var fn = @"USE [CardValidation]
+GO
+/****** Object:  StoredProcedure [dbo].[GetcardinformationTest]    Script Date: 10/10/2018 16:56:36 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
-go
-
-IF Object_id(N'dbo.Getcardinformation', N'TF') IS NOT NULL
-  DROP FUNCTION dbo.getcardinformation
-
-go
-
-CREATE FUNCTION dbo.Getcardinformation(@input_card   NVARCHAR(20),
-                                       @input_expiry NVARCHAR(6))
-returns @cardInformation TABLE (
-  cardnumber NVARCHAR(50) NULL,
-  cardtype   NVARCHAR(50) NULL,
-  result     NVARCHAR(50) NULL )
+CREATE PROCEDURE [dbo].[GetcardinformationTest]
+@cardNumber NVARCHAR(20) = NULL,
+@cardType NVARCHAR(20) = NULL,
+@input_expiry NVARCHAR(6) = NULL,
+@result NVARCHAR(20) = NULL OUTPUT
 AS
   BEGIN
-      DECLARE @cardType     NVARCHAR(50),
-              @result       NVARCHAR(50),
-              @expiry_month NVARCHAR(2),
-              @expiry_year  NVARCHAR(4)
-
-      SET @result = 'INVALID'
-      SET @cardType = CASE
-                        WHEN @input_card LIKE '4%' THEN 'VISA'
-                        WHEN @input_card LIKE '5%' THEN 'MasterCard'
-                        WHEN @input_card LIKE '34%'
-                              OR @input_card LIKE '37%' THEN 'Amex'
-                        WHEN @input_card LIKE '35%' THEN 'JCB'
-                        ELSE 'Unknown'
-                      END
-
+  SET @result = 'INVALID'
       IF @cardType = 'Amex'
         BEGIN
-            IF Len(@input_card) = 15
+            IF Len(@cardNumber) = 15
               SET @result = 'VALID' --AMEX = VALID
         END
       ELSE
         BEGIN
-            IF Len(@input_card) = 16 -- it should be 16
+            IF Len(@cardNumber) = 16 -- it should be 16
               BEGIN
                   IF @cardType = 'JCB'
                     BEGIN
@@ -54,6 +38,7 @@ AS
                   ELSE
                     BEGIN
                         --check valid year
+						 DECLARE @expiry_month NVARCHAR(2), @expiry_year  NVARCHAR(4)
                         IF Isnumeric(@input_expiry) = 1
                           BEGIN
                               SET @expiry_month = Substring(@input_expiry, 1, 2)
@@ -66,10 +51,7 @@ AS
                                       BEGIN
                                           --check if LEAP YEAR
                                           DECLARE @isLeapYear BIT
-
-                                          SELECT @isLeapYear =
-                                                 dbo.Isleapyear(@expiry_year)
-
+                                          SELECT @isLeapYear = dbo.Isleapyear(@expiry_year)
                                           IF @isLeapYear = 1
                                             SET @result = 'VALID'
                                       END
@@ -92,30 +74,21 @@ AS
         END
 
       --check if card exists
-      DECLARE @foundCard NVARCHAR(50)
+      DECLARE @foundCard TINYINT
 
-      SELECT TOP 1 @foundCard = cardnumber
+      SELECT TOP 1 @foundCard = count(*)
       FROM   cards
-      WHERE  cardnumber = @input_card
+      WHERE  cardnumber = @cardNumber
 
-      IF @foundCard IS NULL
+      IF @foundCard = 0
         BEGIN
             SET @result = 'Does not exist'
         END
 
-      SET @foundCard = @input_card
-
-      BEGIN
-          INSERT @cardInformation
-          SELECT @foundCard,
-                 @cardType,
-                 @result
-      END
-
       RETURN
   END
 
-go ";
+  GO";
 
             migrationBuilder.Sql(fn);
         }
