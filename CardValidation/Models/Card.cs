@@ -9,7 +9,7 @@ namespace CardValidation.Models
     {
         public int id { get; set; }
         public string cardNumber { get; set; }
-        public DateTime expiryDate { get; set; }
+        public string expiryDate { get; set; }
 
     }
 }
